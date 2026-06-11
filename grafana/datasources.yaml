@@ -1,0 +1,36 @@
+apiVersion: 1
+
+datasources:
+  - name: Tempo
+    type: tempo
+    access: proxy
+    url: http://tempo:3200
+    uid: grafanacloud-traces
+    isDefault: true
+    jsonData:
+      tracesToLogsV2:
+        datasourceUid: grafanacloud-logs
+        spanStartTimeShift: -5m
+        spanEndTimeShift: 5m
+      tracesToMetrics:
+        datasourceUid: grafanacloud-prom
+      serviceMap:
+        datasourceUid: grafanacloud-prom
+
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    uid: grafanacloud-logs
+    jsonData:
+      derivedFields:
+        - datasourceUid: grafanacloud-traces
+          matcherRegex: "trace_id=(\\w+)"
+          name: TraceID
+          url: "$${__value.raw}"
+
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    uid: grafanacloud-prom

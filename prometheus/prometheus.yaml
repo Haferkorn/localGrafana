@@ -1,0 +1,17 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+storage:
+  tsdb:
+    out_of_order_time_window: 30m
+
+otlp:
+  # Promote OTel resource attributes to Prometheus labels so dashboards can
+  # filter by service / environment the same way they do in Grafana Cloud.
+  promote_resource_attributes:
+    - service.name
+    - service.namespace
+    - service.instance.id
+    - deployment.environment
+    - deployment.environment.name
